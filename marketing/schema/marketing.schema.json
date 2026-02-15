@@ -139,6 +139,70 @@
       "additionalProperties": false
     },
 
+    "targetingOrgType": {
+      "type": "string",
+      "enum": ["org", "user"]
+    },
+
+    "targetingSeedRepo": {
+      "type": "object",
+      "required": ["owner", "repo"],
+      "properties": {
+        "owner": {
+          "type": "string",
+          "minLength": 1,
+          "description": "GitHub owner (org or user)."
+        },
+        "repo": {
+          "type": "string",
+          "minLength": 1,
+          "description": "GitHub repo name."
+        },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "targetingBlock": {
+      "type": "object",
+      "description": "Optional targeting spec for partner/integrator discovery. Drives the target list generator.",
+      "properties": {
+        "keywords": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "description": "Search keywords for GitHub readme/description matching."
+        },
+        "topics": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "description": "GitHub repo topics to search for."
+        },
+        "languages": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Programming languages to filter by."
+        },
+        "orgTypes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/targetingOrgType" },
+          "description": "Filter by GitHub owner type."
+        },
+        "exclusions": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "GitHub owners or repos to exclude from results."
+        },
+        "seedRepos": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/targetingSeedRepo" },
+          "description": "Known repos to use for similarity expansion."
+        }
+      },
+      "additionalProperties": false
+    },
+
     "pressBlock": {
       "type": "object",
       "description": "Optional press/partner data for a tool. Enables press pages, outreach packs, and partner bundles.",
@@ -333,7 +397,8 @@
           "items": { "$ref": "#/$defs/message" },
           "minItems": 1
         },
-        "press": { "$ref": "#/$defs/pressBlock" }
+        "press": { "$ref": "#/$defs/pressBlock" },
+        "targeting": { "$ref": "#/$defs/targetingBlock" }
       },
       "additionalProperties": false
     },

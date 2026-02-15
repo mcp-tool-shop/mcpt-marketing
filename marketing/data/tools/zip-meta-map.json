@@ -175,5 +175,15 @@
         "description": "Pre-release access to new index formats and plan structures before public release."
       }
     ]
+  },
+  "targeting": {
+    "keywords": ["repo index", "repo metadata", "LLM context", "code map", "deterministic build", "CI gating"],
+    "topics": ["ci", "github-actions", "devtools", "llm", "developer-tools", "code-analysis"],
+    "languages": ["Python", "TypeScript", "JavaScript"],
+    "exclusions": ["mcp-tool-shop-org", "mcp-tool-shop"],
+    "seedRepos": [
+      { "owner": "aider-chat", "repo": "aider", "notes": "LLM coding agent, needs repo context" },
+      { "owner": "paul-gauthier", "repo": "aider", "notes": "Alternate org for aider" }
+    ]
   }
 }
