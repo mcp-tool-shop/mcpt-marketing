@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://mcp-tool-shop-org.github.io/mcpt-marketing/schema/marketing.schema.json",
+  "$id": "https://mcp-tool-shop.github.io/mcpt-marketing/schema/marketing.schema.json",
   "title": "MarketIR Schema",
   "description": "Deterministic marketing intermediate representation for MCP Tool Shop tools.",
 

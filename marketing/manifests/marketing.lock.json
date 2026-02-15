@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "generatedAt": "2026-02-15T21:13:15.858Z",
+  "generatedAt": "2026-02-15T21:35:10.751Z",
   "generator": "gen-lock.mjs",
   "files": [
     {
@@ -35,8 +35,8 @@
     },
     {
       "path": "marketing/schema/marketing.schema.json",
-      "sha256": "d0afc0bc75064139a00e9acd2bee16f9f6e07bb300592492aaf41587a5294390",
-      "bytes": 9579
+      "sha256": "f95de57b8821672b6534543e61da3e2b20867cd0ec06dab732b246968a84800f",
+      "bytes": 9575
     }
   ]
 }
