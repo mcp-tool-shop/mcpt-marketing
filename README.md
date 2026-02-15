@@ -1,82 +1,167 @@
 # mcpt-marketing
 
-Deterministic marketing data layer for MCP Tool Shop. Schema-validated claims, hash-addressed evidence, and reproducible marketing builds.
+Deterministic marketing infrastructure for MCPT tools: **falsifiable claims**, **hash-verified evidence**, and **channel-ready messages** that stay traceable as the product evolves.
 
-Internally, the schema and IR layer is called **MarketIR** — a structured intermediate representation of tools, audiences, claims, evidence, messages, and campaigns.
+This repo defines **MarketIR** — a small, versioned "marketing intermediate representation" designed to be consumed by generators and the public site ([mcptoolshop.com](https://mcptoolshop.com)) without turning marketing into a manual, fragile process.
 
-## Ground Rules
+---
 
-These rules are non-negotiable. CI enforces them.
+## What this is (and isn't)
 
-### IDs are stable and permanent
+**This is:**
 
-- IDs follow a namespace pattern: `tool.<slug>`, `aud.<name>`, `claim.<tool>.<slug>`, `ev.<tool>.<slug>.v<n>`, `msg.<tool>.<slug>`, `camp.<tool>.<slug>`
-- IDs are **never renamed**. Deprecate instead (`status: "deprecated"`)
-- All IDs must be unique across the entire graph
+- A structured source of truth for product messaging
+- Claims that are explicitly labeled **proven** vs **aspirational**
+- Evidence artifacts with **sha256 hashes + provenance**
+- Messages that **must trace back to claims** — no drive-by assertions
 
-### Claims must declare status
+**This is not:**
 
-Every claim has a `status`:
+- A blog
+- A CMS
+- A place for vibes-based copy that can't be tested
 
-| Status         | Meaning                                  |
-| -------------- | ---------------------------------------- |
-| `proven`       | Backed by at least one `evidenceRef`     |
-| `aspirational` | Believed true, evidence not yet captured |
-| `deprecated`   | No longer valid — kept for audit trail   |
+---
 
-**Proven claims require evidence.** If a claim is `proven`, it must reference at least one entry in the evidence manifest. CI rejects proven claims with zero evidence.
+## Core ideas
 
-### Evidence is hash-addressed
+| Principle | What it means |
+| --- | --- |
+| **Proof-first** | Proven claims must link to evidence. No evidence, no "proven" badge. |
+| **Deterministic** | Content is pinned by a lockfile. Hash drift fails CI. |
+| **Composable** | Messages are views of claims for different channels and audiences. |
+| **Honest** | Anti-claims prevent overreach. If a tool can't do something, say so. |
 
-Every evidence artifact includes:
+---
 
-- `sha256` hash of the file content
-- `bytes` size
-- `provenance` object: who/what generated it, from which commit, and any notes
-
-This makes evidence tamper-evident and reproducible.
-
-### The lockfile is canonical
-
-`marketing/manifests/marketing.lock.json` pins every included file by hash. CI regenerates the lockfile and fails if it differs from what's committed. This guarantees reproducible "marketing releases."
-
-### Messages must trace to claims
-
-Every message should be derivable from claims. If a message asserts something not represented as a claim, that's a schema violation enforced by validation.
-
-### Deterministic serialization
-
-All JSON files use:
-
-- Stable key ordering (sorted)
-- Stable array ordering (by ID)
-- Trailing newline
-
-This prevents "same data, different diff" noise.
-
-## Repo Structure
+## Repository layout
 
 ```
 marketing/
-  schema/             # JSON Schema (2020-12) definitions
+  schema/           # MarketIR JSON Schema (2020-12, versioned)
   data/
-    tools/            # One file per tool
-    campaigns/        # One file per campaign
-    audiences/        # One file per audience
-  evidence/           # Evidence artifacts (screenshots, reports)
-  manifests/          # evidence.manifest.json + marketing.lock.json
-  scripts/            # validate, hash, gen-lock
+    tools/          # One file per tool (claims, messages, positioning)
+    audiences/      # One file per audience (pain points, context)
+    campaigns/      # One file per campaign (phases, channel sequences)
+    marketing.index.json   # Root index — everything starts here
+  evidence/         # Evidence artifacts (screenshots, reports), hash-addressed
+  manifests/
+    evidence.manifest.json   # Evidence registry with sha256 + provenance
+    marketing.lock.json      # Lockfile pinning all files by hash
+  scripts/          # validate, hash, gen-lock
 ```
 
-## Usage
+### Authored vs generated
+
+| Type | Files | Edited by |
+| --- | --- | --- |
+| **Authored** | `schema/**`, `data/**`, `evidence.manifest.json` | Humans |
+| **Generated** | `marketing.lock.json` | `gen-lock.mjs` script |
+
+Everything must be reachable from `marketing/data/marketing.index.json`. No orphan files.
+
+---
+
+## Determinism contract
+
+### IDs are stable and permanent
+
+IDs follow a namespace pattern and are **never renamed** — deprecate instead.
+
+```
+tool.<slug>              → tool.zip-meta-map
+aud.<name>               → aud.ci-maintainers
+claim.<tool>.<slug>      → claim.zip-meta-map.deterministic-output
+ev.<tool>.<slug>.v<n>    → ev.zip-meta-map.build-screenshot.v1
+msg.<tool>.<slug>        → msg.zip-meta-map.web-blurb
+camp.<tool>.<slug>       → camp.zip-meta-map.launch
+```
+
+All IDs must be unique across the entire graph.
+
+### Claim status is explicit
+
+| Status | Rule |
+| --- | --- |
+| `proven` | Must include at least one `evidenceRef`. CI rejects proven claims with zero evidence. |
+| `aspirational` | Allowed, but must be labeled. Upgrade to proven only when evidence is added. |
+| `deprecated` | Kept for audit trail. Never deleted. |
+
+### Evidence is hash-verified
+
+Every evidence artifact includes `sha256`, `bytes`, and a `provenance` object (generator, source commit, notes). This makes evidence tamper-evident and reproducible.
+
+### Lockfile is canonical
+
+`marketing.lock.json` pins every included file by hash. CI regenerates the lockfile and fails if it differs from what's committed. Same data, same build, every time.
+
+### Messages trace to claims
+
+Every message references claims via `claimRefs`. If a message asserts something not represented as a claim, validation fails.
+
+### Deterministic serialization
+
+All JSON uses sorted keys, stable array ordering, and trailing newlines. This prevents "same data, different diff" noise.
+
+---
+
+## Local workflow
 
 ```bash
 npm install
-node marketing/scripts/validate.mjs       # Schema + invariant checks
-node marketing/scripts/gen-lock.mjs        # Regenerate lockfile
-node marketing/scripts/gen-lock.mjs --check  # Fail if lock differs (CI mode)
+
+# Format check (Prettier)
+npm run format:check
+
+# Schema + invariant validation
+npm run validate
+
+# Lockfile drift check (CI mode)
+npm run lock:check
 ```
+
+**Typical development loop:**
+
+1. Edit or add files under `marketing/data/**`
+2. Add evidence entries to `marketing/manifests/evidence.manifest.json` (and artifacts under `marketing/evidence/` if applicable)
+3. Regenerate the lockfile: `node marketing/scripts/gen-lock.mjs`
+4. Validate: `npm run validate`
+5. Format: `npm run format:check` (fix with `npm run format`)
+
+---
+
+## How it's consumed (site bridge)
+
+The public site treats this repo as a **read-only upstream**. No runtime fetches — everything is resolved at build time.
+
+```
+mcpt-marketing (MarketIR, this repo)
+        │
+        │  fetch + sha256 verification (lockfile-enforced)
+        ▼
+vendor snapshot (build-time, gitignored in site repo)
+        │
+        │  Astro static build
+        ▼
+mcptoolshop.com
+```
+
+The site's `fetch-marketir.mjs` script downloads files referenced in the lockfile, verifies every hash, and writes a local snapshot. If any hash mismatches, the build aborts. This keeps marketing traceable and reproducible.
+
+---
+
+## Contribution rules
+
+The quality bar is simple and non-negotiable:
+
+- **Every claim must be falsifiable** — testable in principle, not just feel-good copy
+- **Upgrade aspirational → proven** only when you add evidence
+- **Messages must reference claims** — if it's said, it must be claimed
+- **Add anti-claims** whenever a tool is likely to be misused or misunderstood
+- **No orphan content** — everything must be reachable from the index
+
+---
 
 ## License
 
-MIT
+MIT (see [LICENSE](LICENSE)).
