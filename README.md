@@ -162,6 +162,18 @@ The quality bar is simple and non-negotiable:
 
 ---
 
+## Security
+
+No secrets, private URLs, API keys, or customer identifiers belong in this repo. Evidence means public artifacts — screenshots, CI links, test results — not internal logs or credentials. If something can't be shown publicly, it's not evidence.
+
+---
+
+## Versioning
+
+MarketIR changes are versioned via `schemaVersion` in the schema and data files. Breaking changes (renamed fields, removed properties, structural changes) require a major bump. Additive changes (new optional fields, new `$defs`) are minor. Downstream consumers like the site bridge should check `schemaVersion` compatibility before ingesting.
+
+---
+
 ## License
 
 MIT (see [LICENSE](LICENSE)).
