@@ -1,0 +1,350 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mcp-tool-shop-org.github.io/mcpt-marketing/schema/marketing.schema.json",
+  "title": "MarketIR Schema",
+  "description": "Deterministic marketing intermediate representation for MCP Tool Shop tools.",
+
+  "$defs": {
+    "schemaVersion": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semver version of the schema this document conforms to."
+    },
+
+    "toolId": {
+      "type": "string",
+      "pattern": "^tool\\.[a-z0-9-]+$"
+    },
+    "audienceId": {
+      "type": "string",
+      "pattern": "^aud\\.[a-z0-9-]+$"
+    },
+    "claimId": {
+      "type": "string",
+      "pattern": "^claim\\.[a-z0-9-]+\\.[a-z0-9-]+$"
+    },
+    "evidenceId": {
+      "type": "string",
+      "pattern": "^ev\\.[a-z0-9-]+\\.[a-z0-9-]+\\.v\\d+$"
+    },
+    "messageId": {
+      "type": "string",
+      "pattern": "^msg\\.[a-z0-9-]+\\.[a-z0-9-]+$"
+    },
+    "campaignId": {
+      "type": "string",
+      "pattern": "^camp\\.[a-z0-9-]+\\.[a-z0-9-]+$"
+    },
+
+    "claimStatus": {
+      "type": "string",
+      "enum": ["proven", "aspirational", "deprecated"]
+    },
+    "evidenceType": {
+      "type": "string",
+      "enum": ["image", "text", "report", "video", "link"]
+    },
+    "messageTone": {
+      "type": "string",
+      "enum": ["technical", "pragmatic", "playful", "executive"]
+    },
+    "messageChannel": {
+      "type": "string",
+      "enum": ["web", "readme", "hn", "x", "linkedin", "newsletter", "presskit"]
+    },
+
+    "constraints": {
+      "type": "object",
+      "description": "Soft advisory constraints for a channel or context.",
+      "properties": {
+        "maxChars": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxSentences": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "claim": {
+      "type": "object",
+      "required": ["id", "status", "statement"],
+      "properties": {
+        "id": { "$ref": "#/$defs/claimId" },
+        "status": { "$ref": "#/$defs/claimStatus" },
+        "statement": {
+          "type": "string",
+          "description": "A falsifiable claim about the tool."
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/evidenceId" },
+          "description": "Required when status is proven."
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "if": {
+        "properties": { "status": { "const": "proven" } }
+      },
+      "then": {
+        "required": ["evidenceRefs"],
+        "properties": {
+          "evidenceRefs": { "minItems": 1 }
+        }
+      }
+    },
+
+    "antiClaim": {
+      "type": "object",
+      "required": ["statement"],
+      "properties": {
+        "statement": {
+          "type": "string",
+          "description": "What the tool does NOT do. Prevents misuse and builds trust."
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "message": {
+      "type": "object",
+      "required": ["id", "channel", "tone", "text", "claimRefs"],
+      "properties": {
+        "id": { "$ref": "#/$defs/messageId" },
+        "channel": { "$ref": "#/$defs/messageChannel" },
+        "tone": { "$ref": "#/$defs/messageTone" },
+        "text": {
+          "type": "string",
+          "description": "The message content."
+        },
+        "claimRefs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/claimId" },
+          "minItems": 1,
+          "description": "Every message must trace to at least one claim."
+        },
+        "constraints": { "$ref": "#/$defs/constraints" },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "tool": {
+      "type": "object",
+      "required": ["schemaVersion", "id", "name", "positioning", "audienceRefs", "claims", "antiClaims", "messages"],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/schemaVersion" },
+        "id": { "$ref": "#/$defs/toolId" },
+        "name": {
+          "type": "string"
+        },
+        "positioning": {
+          "type": "object",
+          "required": ["oneLiner", "valueProps"],
+          "properties": {
+            "oneLiner": {
+              "type": "string",
+              "description": "One sentence that explains the tool."
+            },
+            "valueProps": {
+              "type": "array",
+              "items": { "type": "string" },
+              "minItems": 1,
+              "description": "Key value propositions."
+            }
+          },
+          "additionalProperties": false
+        },
+        "audienceRefs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/audienceId" },
+          "minItems": 1
+        },
+        "claims": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/claim" },
+          "minItems": 1
+        },
+        "antiClaims": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/antiClaim" },
+          "minItems": 1
+        },
+        "messages": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/message" },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "audience": {
+      "type": "object",
+      "required": ["schemaVersion", "id", "name", "description", "painPoints"],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/schemaVersion" },
+        "id": { "$ref": "#/$defs/audienceId" },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "painPoints": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "evidence": {
+      "type": "object",
+      "required": ["id", "type", "format", "sha256", "bytes", "provenance"],
+      "properties": {
+        "id": { "$ref": "#/$defs/evidenceId" },
+        "type": { "$ref": "#/$defs/evidenceType" },
+        "format": {
+          "type": "string",
+          "description": "MIME type or file extension."
+        },
+        "path": {
+          "type": "string",
+          "description": "Relative path within the repo."
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "External URL if evidence is not local."
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "provenance": {
+          "type": "object",
+          "required": ["generator", "sourceCommit"],
+          "properties": {
+            "generator": {
+              "type": "string",
+              "description": "Script or human that produced this artifact."
+            },
+            "sourceCommit": {
+              "type": "string",
+              "description": "Git commit SHA that produced the evidence."
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "anyOf": [
+        { "required": ["path"] },
+        { "required": ["url"] }
+      ]
+    },
+
+    "campaignPhase": {
+      "type": "object",
+      "required": ["name", "channels"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "channels": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/messageChannel" },
+          "minItems": 1
+        },
+        "messageRefs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/messageId" }
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "campaign": {
+      "type": "object",
+      "required": ["schemaVersion", "id", "name", "toolRef", "audienceRefs", "phases"],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/schemaVersion" },
+        "id": { "$ref": "#/$defs/campaignId" },
+        "name": {
+          "type": "string"
+        },
+        "toolRef": { "$ref": "#/$defs/toolId" },
+        "audienceRefs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/audienceId" },
+          "minItems": 1
+        },
+        "phases": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/campaignPhase" },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "fileRef": {
+      "type": "object",
+      "required": ["ref"],
+      "properties": {
+        "ref": {
+          "type": "string",
+          "description": "Relative path from marketing/data/ to the file."
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "index": {
+      "type": "object",
+      "required": ["schemaVersion", "tools", "audiences", "campaigns"],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/schemaVersion" },
+        "tools": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/fileRef" }
+        },
+        "audiences": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/fileRef" }
+        },
+        "campaigns": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/fileRef" }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
