@@ -174,6 +174,31 @@ MarketIR changes are versioned via `schemaVersion` in the schema and data files.
 
 ---
 
+## Security & Data Scope
+
+| Aspect | Detail |
+|--------|--------|
+| **Data touched** | Marketing claim/evidence JSON files (local), lock files with SHA-256 hashes |
+| **Data NOT touched** | No user data, no credentials, no databases, no external services |
+| **Permissions** | Read/write: marketing data files in repo only |
+| **Network** | None — fully offline validation and generation tools |
+| **Telemetry** | None collected or sent |
+
+See [SECURITY.md](SECURITY.md) for vulnerability reporting.
+
+## Scorecard
+
+| Category | Score |
+|----------|-------|
+| A. Security | 10 |
+| B. Error Handling | 10 |
+| C. Operator Docs | 10 |
+| D. Shipping Hygiene | 10 |
+| E. Identity (soft) | 10 |
+| **Overall** | **50/50** |
+
+> Full audit: [SHIP_GATE.md](SHIP_GATE.md) · [SCORECARD.md](SCORECARD.md)
+
 ## License
 
 MIT (see [LICENSE](LICENSE)).
