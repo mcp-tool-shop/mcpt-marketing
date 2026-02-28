@@ -177,8 +177,12 @@ for (const { ref } of index.tools) {
   }
 
   const pressInfo = tool.press ? `, press: ${tool.press.quotes?.length || 0} quotes` : "";
-  const targetingInfo = tool.targeting ? `, targeting: ${tool.targeting.keywords?.length || 0} keywords, ${tool.targeting.topics?.length || 0} topics` : "";
-  console.log(`  OK: ${tool.id} (${tool.claims.length} claims, ${tool.messages.length} messages${pressInfo}${targetingInfo})`);
+  const targetingInfo = tool.targeting
+    ? `, targeting: ${tool.targeting.keywords?.length || 0} keywords, ${tool.targeting.topics?.length || 0} topics`
+    : "";
+  console.log(
+    `  OK: ${tool.id} (${tool.claims.length} claims, ${tool.messages.length} messages${pressInfo}${targetingInfo})`,
+  );
 }
 
 // Load campaigns

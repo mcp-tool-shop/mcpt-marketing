@@ -134,7 +134,13 @@
       "projectDescription": "zip-meta-map is a Python CLI that generates deterministic, JSON Schema-validated indexes of repositories and ZIP archives. It produces structured context for LLM agents with configurable token budgets and CI gating via diff --exit-code. The output is plain JSON consumable by any tool — no vendor lock-in, no runtime dependency.",
       "founderBio": "Built by the mcp-tool-shop team — a small group focused on deterministic developer tooling for AI agent infrastructure.",
       "preferredNouns": ["tool", "CLI", "indexer"],
-      "forbiddenPhrases": ["AI-powered", "revolutionary", "game-changer", "magic", "next-generation"]
+      "forbiddenPhrases": [
+        "AI-powered",
+        "revolutionary",
+        "game-changer",
+        "magic",
+        "next-generation"
+      ]
     },
     "contacts": [
       {
@@ -177,7 +183,14 @@
     ]
   },
   "targeting": {
-    "keywords": ["repo index", "repo metadata", "LLM context", "code map", "deterministic build", "CI gating"],
+    "keywords": [
+      "repo index",
+      "repo metadata",
+      "LLM context",
+      "code map",
+      "deterministic build",
+      "CI gating"
+    ],
     "topics": ["ci", "github-actions", "devtools", "llm", "developer-tools", "code-analysis"],
     "languages": ["Python", "TypeScript", "JavaScript"],
     "exclusions": ["mcp-tool-shop-org", "mcp-tool-shop"],

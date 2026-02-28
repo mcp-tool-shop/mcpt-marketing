@@ -3,7 +3,7 @@
 ## Supported Versions
 
 | Version | Supported |
-|---------|-----------|
+| ------- | --------- |
 | 1.0.x   | Yes       |
 | < 1.0   | No        |
 
@@ -22,6 +22,7 @@ mcpt-marketing is a **MarketIR infrastructure** project — deterministic market
 Email: **64996768+mcp-tool-shop@users.noreply.github.com**
 
 Include:
+
 - Description of the vulnerability
 - Steps to reproduce
 - Version affected
@@ -29,8 +30,8 @@ Include:
 
 ### Response timeline
 
-| Action | Target |
-|--------|--------|
+| Action             | Target   |
+| ------------------ | -------- |
 | Acknowledge report | 48 hours |
-| Assess severity | 7 days |
-| Release fix | 30 days |
+| Assess severity    | 7 days   |
+| Release fix        | 30 days  |

@@ -25,12 +25,12 @@ This repo defines **MarketIR** — a small, versioned "marketing intermediate re
 
 ## Core ideas
 
-| Principle | What it means |
-| --- | --- |
-| **Proof-first** | Proven claims must link to evidence. No evidence, no "proven" badge. |
-| **Deterministic** | Content is pinned by a lockfile. Hash drift fails CI. |
-| **Composable** | Messages are views of claims for different channels and audiences. |
-| **Honest** | Anti-claims prevent overreach. If a tool can't do something, say so. |
+| Principle         | What it means                                                        |
+| ----------------- | -------------------------------------------------------------------- |
+| **Proof-first**   | Proven claims must link to evidence. No evidence, no "proven" badge. |
+| **Deterministic** | Content is pinned by a lockfile. Hash drift fails CI.                |
+| **Composable**    | Messages are views of claims for different channels and audiences.   |
+| **Honest**        | Anti-claims prevent overreach. If a tool can't do something, say so. |
 
 ---
 
@@ -53,10 +53,10 @@ marketing/
 
 ### Authored vs generated
 
-| Type | Files | Edited by |
-| --- | --- | --- |
-| **Authored** | `schema/**`, `data/**`, `evidence.manifest.json` | Humans |
-| **Generated** | `marketing.lock.json` | `gen-lock.mjs` script |
+| Type          | Files                                            | Edited by             |
+| ------------- | ------------------------------------------------ | --------------------- |
+| **Authored**  | `schema/**`, `data/**`, `evidence.manifest.json` | Humans                |
+| **Generated** | `marketing.lock.json`                            | `gen-lock.mjs` script |
 
 Everything must be reachable from `marketing/data/marketing.index.json`. No orphan files.
 
@@ -81,11 +81,11 @@ All IDs must be unique across the entire graph.
 
 ### Claim status is explicit
 
-| Status | Rule |
-| --- | --- |
-| `proven` | Must include at least one `evidenceRef`. CI rejects proven claims with zero evidence. |
-| `aspirational` | Allowed, but must be labeled. Upgrade to proven only when evidence is added. |
-| `deprecated` | Kept for audit trail. Never deleted. |
+| Status         | Rule                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------- |
+| `proven`       | Must include at least one `evidenceRef`. CI rejects proven claims with zero evidence. |
+| `aspirational` | Allowed, but must be labeled. Upgrade to proven only when evidence is added.          |
+| `deprecated`   | Kept for audit trail. Never deleted.                                                  |
 
 ### Evidence is hash-verified
 
@@ -176,26 +176,26 @@ MarketIR changes are versioned via `schemaVersion` in the schema and data files.
 
 ## Security & Data Scope
 
-| Aspect | Detail |
-|--------|--------|
-| **Data touched** | Marketing claim/evidence JSON files (local), lock files with SHA-256 hashes |
-| **Data NOT touched** | No user data, no credentials, no databases, no external services |
-| **Permissions** | Read/write: marketing data files in repo only |
-| **Network** | None — fully offline validation and generation tools |
-| **Telemetry** | None collected or sent |
+| Aspect               | Detail                                                                      |
+| -------------------- | --------------------------------------------------------------------------- |
+| **Data touched**     | Marketing claim/evidence JSON files (local), lock files with SHA-256 hashes |
+| **Data NOT touched** | No user data, no credentials, no databases, no external services            |
+| **Permissions**      | Read/write: marketing data files in repo only                               |
+| **Network**          | None — fully offline validation and generation tools                        |
+| **Telemetry**        | None collected or sent                                                      |
 
 See [SECURITY.md](SECURITY.md) for vulnerability reporting.
 
 ## Scorecard
 
-| Category | Score |
-|----------|-------|
-| A. Security | 10 |
-| B. Error Handling | 10 |
-| C. Operator Docs | 10 |
-| D. Shipping Hygiene | 10 |
-| E. Identity (soft) | 10 |
-| **Overall** | **50/50** |
+| Category            | Score     |
+| ------------------- | --------- |
+| A. Security         | 10        |
+| B. Error Handling   | 10        |
+| C. Operator Docs    | 10        |
+| D. Shipping Hygiene | 10        |
+| E. Identity (soft)  | 10        |
+| **Overall**         | **50/50** |
 
 > Full audit: [SHIP_GATE.md](SHIP_GATE.md) · [SCORECARD.md](SCORECARD.md)
 
