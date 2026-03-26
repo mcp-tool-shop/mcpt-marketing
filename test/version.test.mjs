@@ -23,10 +23,7 @@ describe("version consistency", () => {
   });
 
   it("CHANGELOG contains current version", () => {
-    assert.ok(
-      changelog.includes(`[${pkg.version}]`),
-      `CHANGELOG missing [${pkg.version}]`,
-    );
+    assert.ok(changelog.includes(`[${pkg.version}]`), `CHANGELOG missing [${pkg.version}]`);
   });
 
   it("LICENSE exists and is MIT", () => {
